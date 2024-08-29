@@ -1,19 +1,25 @@
 import { z } from 'zod';
 
-export const createProductSchema = z.object({
-    nama_produk: z.string().min(1, 'Nama produk harus diisi'),
-    stock: z.number().int().nonnegative('Stock harus berupa angka positif'),
-    harga_produk: z.number().positive('Harga produk harus lebih dari 0'),
-    photo_produk: z.string().optional().nullable(),
-    kategori_id: z.number().int().positive('Kategori ID harus lebih dari 0')
-});
-
-export const updateProductSchema = createProductSchema.partial();
-
 export const createProductsSchema = z.object({
     nama_produk: z.string(),
-    stock: z.number().int().nonnegative(),
-    harga_produk: z.number().nonnegative(),
+    stock: z.coerce.number().int().nonnegative(),
+    harga_produk: z.coerce.number().nonnegative(),
     photo_produk: z.string().nullable(),
-    kategori_id: z.number().int().nonnegative()
+    kategori_id: z.coerce.number().int().nonnegative()
+});
+
+export const createProductSchema = z.object({
+    nama_produk: z.string(),
+    stock: z.coerce.number(), 
+    harga_produk: z.coerce.number(),
+    photo_produk: z.string().optional(),
+    kategori_id: z.coerce.number(),
+});
+
+export const updateProductSchema = z.object({
+    nama_produk: z.string().optional(),
+    stock: z.coerce.number().optional(),
+    harga_produk: z.coerce.number().optional(),
+    photo_produk: z.string().optional(),
+    kategori_id: z.coerce.number().optional(),
 });

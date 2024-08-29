@@ -6,6 +6,11 @@ import { createProduct, createProducts, getProductById, listProducts, updateProd
 export const createProductController = async (req: Request, res: Response) => {
     try {
         const validatedData = createProductSchema.parse(req.body);
+
+        if (req.file) {
+            validatedData.photo_produk = req.file.filename;
+        }
+
         await createProduct(validatedData);
         res.status(201).json({ message: 'Product Added!' });
     } catch (error) {
@@ -18,8 +23,22 @@ export const createProductController = async (req: Request, res: Response) => {
 
 export const createProductsController = async (req: Request, res: Response) => {
     try {
-        const validatedData = z.array(createProductsSchema).parse(req.body);
-        await createProducts(validatedData);
+        const files = req.files as Express.Multer.File[];
+        const validatedDataArray = z.array(createProductsSchema).parse(req.body);
+
+        if (files.length !== validatedDataArray.length) {
+            return res.status(400).json({ message: 'Number of images does not match the number of products' });
+        }
+
+        const productsWithImages = validatedDataArray.map((productData, index) => {
+            const photo_produk = files[index].filename;
+            return {
+                ...productData,
+                photo_produk
+            };
+        });
+
+        await createProducts(productsWithImages);
         res.status(201).json({ message: 'Products Added!' });
     } catch (error) {
         if (error instanceof z.ZodError) {
@@ -54,6 +73,11 @@ export const listProductsController = async (req: Request, res: Response) => {
 export const updateProductController = async (req: Request, res: Response) => {
     try {
         const validatedData = updateProductSchema.parse(req.body);
+
+        if (req.file) {
+            validatedData.photo_produk = req.file.filename;
+        }
+
         await updateProduct(Number(req.params.id), validatedData);
         res.status(200).json({ message: 'Product Updated!' });
     } catch (error) {
