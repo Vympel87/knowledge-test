@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
+import { RowDataPacket } from 'mysql2/promise';
+import { db } from '../config/DB';
 import { createTransactionSchema, updateTransactionSchema } from '../schemas/transactionSchema';
 import {
     createTransaction,
@@ -46,7 +48,9 @@ export const listTransactionsController = async (req: Request, res: Response) =>
 export const updateTransactionController = async (req: Request, res: Response) => {
     try {
         const validatedData = updateTransactionSchema.parse(req.body);
-        await updateTransaction(Number(req.params.id), validatedData);
+        const transactionId = Number(req.params.id);
+
+        await updateTransaction(transactionId, validatedData);
         res.status(200).json({ message: 'Transaction Updated!' });
     } catch (error) {
         if (error instanceof z.ZodError) {

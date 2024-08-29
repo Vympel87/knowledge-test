@@ -6,7 +6,7 @@ export const createTransactionSchema = z.object({
 });
 
 export const updateTransactionSchema = z.object({
-    id_produk: z.number().optional(),
-    jenis_transaksi: z.enum(['masuk', 'keluar']).optional(),
-    timestamp: z.date().optional()
+    id_produk: z.number(),
+    jenis_transaksi: z.enum(['masuk', 'keluar']),
+    timestamp: z.date().optional(),
 });
