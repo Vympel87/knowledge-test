@@ -4,7 +4,7 @@ export const createProductsSchema = z.object({
     nama_produk: z.string(),
     stock: z.coerce.number().int().nonnegative(),
     harga_produk: z.coerce.number().nonnegative(),
-    photo_produk: z.string().nullable(),
+    photo_produk: z.string().nullable().optional(),
     kategori_id: z.coerce.number().int().nonnegative()
 });
 

@@ -26,12 +26,13 @@ export const createProductsController = async (req: Request, res: Response) => {
         const files = req.files as Express.Multer.File[];
         const validatedDataArray = z.array(createProductsSchema).parse(req.body);
 
-        if (files.length !== validatedDataArray.length) {
-            return res.status(400).json({ message: 'Number of images does not match the number of products' });
-        }
-
         const productsWithImages = validatedDataArray.map((productData, index) => {
-            const photo_produk = files[index].filename;
+            let photo_produk = productData.photo_produk || null;
+
+            if (files && files[index]) {
+                photo_produk = files[index].filename;
+            }
+
             return {
                 ...productData,
                 photo_produk
@@ -39,14 +40,17 @@ export const createProductsController = async (req: Request, res: Response) => {
         });
 
         await createProducts(productsWithImages);
+
         res.status(201).json({ message: 'Products Added!' });
     } catch (error) {
+        console.error('Error in createProductsController:', error);
         if (error instanceof z.ZodError) {
             return res.status(400).json({ message: 'Validation Error', errors: error.errors });
         }
         res.status(500).json({ message: 'Something Went Wrong' });
     }
 };
+
 
 export const getProductController = async (req: Request, res: Response) => {
     try {

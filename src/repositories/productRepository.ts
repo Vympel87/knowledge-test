@@ -1,7 +1,7 @@
 import { db } from '../config/DB';
 import { Product } from '../models/productModel';
 import { RowDataPacket } from 'mysql2/promise';
-import { base64ToString, stringToBase64 } from '../utils/conversionBase64';
+import { base64ToString, stringToBase64, stringToBase64Bulk } from '../utils/conversionBase64';
 import { deleteFileFromStorage } from '../utils/deleteFileStorage';
 
 export const getProductById = async (id: number): Promise<Product | null> => {
@@ -36,10 +36,12 @@ export const listProducts = async (): Promise<Product[]> => {
 
 export const createProduct = async (product: Product): Promise<void> => {
     const base64Photo = product.photo_produk ? stringToBase64(product.photo_produk) : null;
+    
     const query = `
         INSERT INTO Product (nama_produk, stock, harga_produk, photo_produk, kategori_id) 
         VALUES (?, ?, ?, ?, ?)
     `;
+    
     await db.query(query, [
         product.nama_produk, 
         product.stock, 
